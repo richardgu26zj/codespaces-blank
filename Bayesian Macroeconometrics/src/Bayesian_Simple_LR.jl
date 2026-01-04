@@ -13,10 +13,10 @@ plot(date, data,
      grid =:both,
      gridalpha = 0.15,
      legend = false,
-     xlabel = L"\text{Quarters}",
+     xlabel = L"\text{Quarters} (Q)",
      ylabel = L"\text{Inflation Rate} (\%)",
      title = L"\text{US Inflation Rate (PCE)}",
-     titlefont = font(16, "serif", :bold),
+     titlefont = font(16, :bold),
      )
 
 savefig("figures/inflation.pdf")
