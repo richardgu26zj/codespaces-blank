@@ -1,4 +1,4 @@
-using CSV, DataFrames, Plots, Plots.Measures
+using CSV, DataFrames, Plots, Plots.Measures, LaTeXStrings
 
 # Load Data
 rawdata = CSV.read("data/PCE.csv",DataFrame);
@@ -11,10 +11,12 @@ plot(date, data,
      color =:blue,
      lw = 3; 
      grid =:both,
+     gridalpha = 0.15,
      legend = false,
-     xlabel = "Quarters",
-     ylabel = "Inflation Rate (%)",
-     title = "US Inflation Rate (PCE)",
+     xlabel = L"Quarters",
+     ylabel = L"Inflation Rate (\%)",
+     title = L"US Inflation Rate (PCE)",
      titlefont = font(16, "serif", :bold),
      )
+
 savefig("figures/inflation.pdf")
