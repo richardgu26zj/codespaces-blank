@@ -1,5 +1,5 @@
 using CSV, DataFrames, Plots, Plots.Measures, Random, Distributions, ProgressMeter, LaTeXStrings, LinearAlgebra
-plotlyjs()
+
 # Load Data
 rawdata = CSV.read("data/PCE.csv",DataFrame);
 data = Vector(rawdata[1:end-1,2]);
@@ -71,9 +71,9 @@ end
 store_param = LM_AR2_MCMC(y,X,Nsim,Nburn)
 
 # plotting
-#gr()
-labels = [L"\beta_0",L"\beta_1",
-        L"\beta_2",L"\sigma^2"];
+gr()
+labels = ["intercept","lag 1 coefficient",
+        "lag 2 coefficient","variance"];
 
 plots = [histogram(store_param[:,i],
         bins = :auto,
@@ -81,9 +81,11 @@ plots = [histogram(store_param[:,i],
         alpha = 0.7,
         title = labels[i],
         legend = false,
-        titlefont = font(10, "serif", :bold)) for i in 1:(k+1)]
+        titlefont = font(10, "serif", :bold)) for i in 1:(k+1)];
 
 plot(plots..., layout = (2,2), size = (950, 600))
+
+savefig("figures/LM_AR2_hist_plot.pdf");
 
 
 
