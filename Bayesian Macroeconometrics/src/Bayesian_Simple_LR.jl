@@ -1,4 +1,4 @@
-using CSV, DataFrames, Plots, Plots.Measures, Random, Distributions, ProgressMeter, LaTeXStrings, LinearAlgebra
+using CSV, DataFrames, Plots, Plots.Measures, Random, Distributions, ProgressMeter,LinearAlgebra
 
 # Load Data
 rawdata = CSV.read("data/PCE.csv",DataFrame);
@@ -33,7 +33,7 @@ date = range(1959.25, stop = 2025.25, length = length(y));
 # MCMC setup 
 Nsim = 50000; 
 Nburn = 5000;
-function LM_AR2_MCMC(y,X,Nsim,Nburn)
+function LM_AR2_Gibbs(y,X,Nsim,Nburn)
     # setup
     T,k = size(X);
     store_param = zeros(Nsim,k+1);
@@ -68,7 +68,7 @@ function LM_AR2_MCMC(y,X,Nsim,Nburn)
     return store_param
 end
 
-store_param = LM_AR2_MCMC(y,X,Nsim,Nburn)
+@time store_param = LM_AR2_Gibbs(y,X,Nsim,Nburn)
 
 # plotting
 gr()
