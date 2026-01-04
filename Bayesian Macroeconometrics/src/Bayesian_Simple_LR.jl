@@ -10,7 +10,7 @@ date = range(1959.25, stop = 2025.25, length = length(data));
 gr()
 plot(date, data, 
      color =:blue,
-     lw = 2.5; 
+     lw = 2.5, 
      grid =:both,
      gridalpha = 0.15,
      legend = false,
