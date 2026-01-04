@@ -18,7 +18,7 @@ plot(date, data,
      ylabel = "Inflation Rate (%)",
      title = "US Inflation Rate (PCE)",
      guidefont = font(12, "Computer Modern"),
-     titlefont = font(16,"Computer Modern"),
+     titlefont = font(16,"Computer Modern",:bold),
      xlims = (1959.00, 2025.50),
      tickfont = font(8, "Computer Modern")
      )
