@@ -15,6 +15,6 @@ plot(date, data,
      xlabel = "Quarters",
      ylabel = "Inflation Rate (%)",
      title = "US Inflation Rate (PCE)",
-     titlefont = font(16, "Times New Roman", :bold),
+     titlefont = font(16, "serif", :bold),
      )
 savefig("figures/inflation.pdf")
