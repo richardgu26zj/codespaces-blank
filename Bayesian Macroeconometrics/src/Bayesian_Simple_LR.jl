@@ -13,9 +13,9 @@ plot(date, data,
      grid =:both,
      gridalpha = 0.15,
      legend = false,
-     xlabel = L"Quarters",
-     ylabel = L"Inflation Rate (\%)",
-     title = L"US Inflation Rate (PCE)",
+     xlabel = L"\text{Quarters}",
+     ylabel = L"\text{Inflation Rate} (\%)",
+     title = L"\text{US Inflation Rate (PCE)}",
      titlefont = font(16, "serif", :bold),
      )
 
