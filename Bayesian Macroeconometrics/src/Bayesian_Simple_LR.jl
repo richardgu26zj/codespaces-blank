@@ -1,9 +1,5 @@
 using CSV, DataFrames, Plots, Plots.Measures, Random, Distributions, ProgressMeter,LinearAlgebra
 
-# using Pkg
-# Pkg.activate(@__DIR__)
-# cd(@__DIR__)
-
 # Load Data
 rawdata = CSV.read("data/PCE.csv",DataFrame);
 data = Vector(rawdata[1:end-1,2]);
