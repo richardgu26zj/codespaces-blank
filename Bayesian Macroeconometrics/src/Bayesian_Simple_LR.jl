@@ -1,5 +1,3 @@
-Pkg.activate(joinpath(@__DIR__, ".."))
-
 using CSV, DataFrames, Plots, Plots.Measures, Random, Distributions, ProgressMeter,LinearAlgebra
 
 # using Pkg
@@ -13,7 +11,7 @@ data = 400 .*log.(data[2:end]./data[1:end-1]);
 y = data[3:end];
 T = length(y);
 X = [ones(T,1) data[2:end-1] data[1:end-2]];
-#k = size(X,2);
+k = size(X,2);
 date = range(1959.25, stop = 2025.25, length = length(y));
 
 # Initialize plotting of data
