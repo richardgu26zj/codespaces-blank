@@ -1,5 +1,3 @@
-Pkg.activate(joinpath(@__DIR__, ".."))
-
 using CSV, DataFrames, Plots, Plots.Measures, Random, Distributions, ProgressMeter,LinearAlgebra
 
 # using Pkg
