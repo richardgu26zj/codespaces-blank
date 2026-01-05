@@ -12,7 +12,7 @@ function SVRW(ystar, h, h0, sigh2)
     P = P ./sum(P, dims=2)
     S = 7 .- sum(rand(T) .< cumsum(P, dims=2), dims=2) .+1
 
-    H = sparse(I,T,T) - sparse(1:T-1, 2:T, ones(T-1), T, T)
+    H = sparse(I,T,T) - sparse(2:T, 1:T-1, vec(ones(1,T-1)), T, T)
     HH = H'*H
     iSig = sparse(1:T, 1:T, vec(1 ./s2j[S]))
     Dh = iSig + HH/sigh2
