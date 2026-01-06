@@ -18,8 +18,9 @@ function SVRW(ystar::Matrix{Float64}, h::Matrix{Float64}, h0::Real, sigh2::Real)
     #iSig = spdiagm(0 => vec(1 ./s2j[S]))
     iSig = Diagonal(vec(1 ./s2j[S]))
     Dh = iSig + HH/sigh2
-    h_hat = Dh\(iSig*(ystar .-mj[S]) + h0/sigh2*HH*ones(T))
-    h = h_hat + cholesky(Dh).L'\randn(T)
+    h_hat = Dh\(iSig*(ystar .-mj[S]) + h0/sigh2*HH*ones(T,1))
+    #h = h_hat + cholesky(Dh).L'\randn(T)
+    h = h_hat + cholesky(Dh).L'\randn(T,1) 
 
     return h 
 end
