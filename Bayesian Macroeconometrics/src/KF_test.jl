@@ -4,7 +4,7 @@ include("kalman_filter.jl")  # assuming the Kalman filter function is in this fi
 
 # define the stimulation parameters
 Random.seed!(1234)  # for reproducibility
-n_steps = 50
+n_steps = 200 # number of time steps
 Δt = 0.1         # time step    
 σ_proc = 0.1  # process noise standard deviation
 σ_meas = 0.5 # measurement noise standard deviation
@@ -40,14 +40,14 @@ end
 # --- Kalman Filter Implementation ---
 
 # initial guess
-s_est = [0.0; 0.0]  # initial state estimate
+S_est = [0.0; 0.0]  # initial state estimate
 P_est = Matrix{Float64}(I, 2, 2)*10.0  # initial estimate covariance
 
-estimated_states = Vector{Vector{Float64}}(undef, n_steps)
+estimated_states = Vector{Vector{Float64}}()
 total_loglik = 0.0
 
-for t in 1:n_steps
-    global s_est, P_est, total_loglik
+@time for t in 1:n_steps
+    global S_est, P_est, total_loglik
     y = observations[t]
 
     S_est, P_est, loglik = kalman_filter(A, Q, H, R, S_est, P_est, y)
@@ -70,6 +70,8 @@ scatter!(time, observed_positions, label="Observed Position", ms=3, alpha=0.5)
 xlabel!("Time (s)")
 ylabel!("Position")
 title!("Kalman Filter Position Estimation")
+
+savefig("figures/kalman_filter_position_estimation.pdf")
 
 
 
