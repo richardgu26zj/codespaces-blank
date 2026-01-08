@@ -5,7 +5,7 @@ kf(y, H, shat, sig, G, M)
 
 Christopher Sims Matlab code of SVD-based Kalman Filter
 
-````
+```
 
 function kf(y, H, shat, sig, G, M)
     # ensure vectors are column vectors (handling dimensionality)
@@ -21,12 +21,12 @@ function kf(y, H, shat, sig, G, M)
 
     # 3. project state uncertainty into observation space
     F = svd(H*u0*Diagonal(sqrt.(d0_vals)))
-    u, d_vals, v = F.U, F.S, F.v
+    u, d_vals, v = F.U, F.S, F.V 
 
     # 4. handle singuarity (truncation)
     first0 = findfirst(x -> x<1e-12, d_vals)
 
-    if first0 == nothing
+    if first0 === nothing
         # keep all dimensions if no small singular values found
         idx = 1:length(d_vals)
     else
@@ -51,8 +51,8 @@ function kf(y, H, shat, sig, G, M)
 
     # 6. state update
     shatnew = fac*ferr + G*shat
-    n_v = size(v_trunc, 1)
-    signew = fac*(I - v_trunc*d_inv*v_trunc')*fac'
+    n_fac = size(fac, 1)
+    signew = fac*(I - v_trunc*v_trunc')*fac'
 
     return shatnew, signew, lh, yhat
 
