@@ -1,1 +1,0 @@
-store_param = BLM_AR2_Gibbs(y,X,prior,niter,nburn);
