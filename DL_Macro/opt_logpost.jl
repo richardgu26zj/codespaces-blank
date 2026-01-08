@@ -12,6 +12,7 @@ function objective(u, p)
     return - (log_lik + log_prior)  # negative log-posterior
 end
 
+##
 # 2. Set up the Optimization problem with Automatic Differentiation
 # autoforwarddiff() tells the package to handle gradients and Hessian for us
 opt_func = OptimizationFunction(objective, Optimization.AutoForwardDiff())

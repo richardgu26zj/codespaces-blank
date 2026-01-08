@@ -1,0 +1,359 @@
+\documentclass[a4paper,10pt,UTF8]{article}
+% --- Font: Palatino for Text & Math ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo} % The classic Palatino/Pazo package
+\usepackage{amsmath, amsthm, mathtools, bm,amssymb}
+
+\usepackage[a4paper, left=3cm, right=2cm, top=2.5cm, bottom=2.5cm]{geometry}
+
+% --- CRITICAL FIX: The Font Error Fix ---
+% This tells LaTeX to use the standard AMS Blackboard Bold instead of 
+% the Pazo version that is missing on your MiKTeX setup.
+%\DeclareMathAlphabet{\mathbb}{U}{msb}{m}{n}
+
+% --- Hyperlinks ---
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}
+
+\begin{document}
+\title{\textbf{Linear Gaussian State-Space Model Estimation}}
+\author{Gu, Xin\thanks{PhD in Economics, School of Finance (School of Zheshang Asset Management), Zhejiang Gongshang
+University, Hangzhou, Zhejiang, China. Email: \href{mailto:richardgu26@zgjsu.edu.cn}{richardgu26@zgjsu.edu.cn}.}}
+\date{}
+
+\maketitle
+
+% --- Added Table of Contents ---
+\tableofcontents
+
+\section{Linear Gaussian State-Space Model}\label{sec: SSM setup}
+
+%http://sims.princeton.edu/yftp/Courses/Times16/VARcode/VARexMatlab/ 
+
+Consider a discrete-time linear dynamical system characterized by the following state-space representation:
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  y_t &=& Hs_t + v_t\,, \quad v_t\sim\mathcal{N}(0, R)\,,\label{eqn: obs eq}\\
+  s_t &=& As_{t-1} + w_t\,,\quad w_t\sim\mathcal{N}(0, Q)\,, \label{eqn: state trans}
+\end{eqnarray}
+Here, \eqref{eqn: state trans} denotes the \textbf{state transition equation}, governing the evolution of the latent state $s_t\in\mathbb{R}^m$ over time, where $A$ represents the state transition dynamics,  and $w_t$ is the process noise. Equation \eqref{eqn: obs eq} defines the \textbf{observation model}, mapping the latent state to the observed measurement $y_t\in\mathbb{R}^n$ via the observation matrix $H$, subject to the measurement noise $v_t$. Both $w_t$ and $v_t$ are assumed to be mutually independent, zero-mean Gaussian white noise processes with covariance matrices $Q$ and $R$, respectively. \\
+
+\section{Recursive Estimation: The Kalman Filter}
+
+The objective of the filtering problem is to determine the posterior distribution of the state $s_t$ given the history of observations $\mathcal{Y}_t = \{y_1, \dots, y_t\}$. Within the Bayesian framework, this is achieved through a recursive two-step process: \textbf{prediction} and \textbf{update}. 
+
+\subsection{The Prediction Phase}
+
+The prediction step propagates the previous posterior estimate into the current time step. The \textbf{a priori} state estimate, $s_{t|t-1}$, and its associated error covariance, $P_{t|t-1}$, are defined as the conditional expectations:
+\begin{align*}
+  s_{t|t-1} & := \mathbb{E}[s_t\mid y_{1:t-1}]\,, \\
+  P_{t|t-1}  & := \mathbb{E}[(s_t - s_{t|t-1})(s_t - s_{t|t-1})^\top]\,,
+\end{align*}
+
+Given the state-space representation shown in Section \ref{sec: SSM setup}, the estimated state and its covariance can be expressed as
+\begin{align}
+  s_{t|t-1} & = As_{t-1|t-1}\,, \\
+  P_{t|t-1} & = \mathbb{E}[(s_t - s_{t|t-1})(s_t - s_{t|t-1})^\top]\,,\notag\\
+  & = \mathbb{E}[(As_{t-1}-As_{t-1|t-1} + w_t)(As_{t-1}-As_{t-1|t-1} + w_t)^\top]\,,\notag\\
+  & = A\mathbb{E}[(s_{t-1}-s_{t-1|t-1})(s_{t-1} - s_{t-1|t-1})^\top]A^\top + \mathbb{E}[w_tw_t^\top]\,,\notag\\
+  & = AP_{t-1|t-1}A^\top+ Q\,,
+\end{align}
+
+Simultaneously, we define the predicted observation $y_{t|t-1}$ and the innovation covariance $F_{t|t-1}$ as:
+\begin{align}
+  y_{t|t-1} & = Hs_{t|t-1}\,,\\
+  F_{t|t-1} & = \mathbb{E}[(y_t - y_{t|t-1})(y_t - y_{t|t-1})^\top]\,,\notag\\
+  & = \mathbb  {E}[(Hs_t - Hs_{t|t-1} + v_t)(Hs_t - Hs_{t|t-1} + v_t)^\top]\,,\notag\\
+  & = H\mathbb{E}[(s_t - s_{t|t-1})(s_t - s_{t|t-1})^\top]H^\top + \mathbb{E}[v_tv_t^\top]\,,\notag\\
+  & = HP_{t|t-1}H^\top + R\,,
+\end{align}
+
+The log-likelihood of the observation $y_t$ is then given by the Gaussian density:
+\begin{align}
+  \mathcal{L} =& -\frac{n}{2}\log(2\pi) - \frac{1}{2}\log(\det(F_{t|t-1})) - \frac{1}{2}\left((y_t - y_{t|t-1})^\top F_{t|t-1}^{-1}(y_t - y_{t|t-1})\right)\,, \label{eqn: loglikt}
+\end{align}
+
+\subsection{The Update Phase}
+
+Under the Gaussian assumption, the joint distribution of the state $s_t$ and the observation $y_t$ conditional on $\mathcal{Y}_{t-1}$ is expressed as: 
+\begin{equation}\label{eqn: conditional gaussian}
+  \begin{pmatrix}
+    y_t \\
+    s_t 
+  \end{pmatrix}\sim\mathcal{N}\left(\begin{bmatrix}
+                                      y_{t|t-1} \\
+                                      s_{t|t-1}
+                                    \end{bmatrix}\,, \begin{bmatrix}
+                                                       F_{t|t-1} & HP_{t|t-1} \\
+                                                       P_{t|t-1}H^\top & P_{t|t-1} 
+                                                     \end{bmatrix}\right)\,,
+\end{equation}
+where 
+\begin{align*}
+  \operatorname{cov}(s_t, y_t) & = \mathbb{E}[(s_t - s_{t|t-1})(y_t - y_{t|t-1})^\top]\,, \\
+   & = \mathbb{E}[(s_t - s_{t|t-1})(Hs_t - Hs_{t|t-1} + v_t)^\top]\,,\\
+   & = \mathbb{E}[(s_t - s_{t|t-1})(s_t - s_{t|t-1})^\top]H^\top\,,\\
+   & = P_{t|t-1}H^\top\,,
+\end{align*}
+
+By applying the properties of conditional Gaussian distributions, the \textbf{a posteriori} state estimate $s_{t|t}$ and covariance $P_{t|t}$ are derived as:
+\begin{align*}
+  s_{t|t} & = s_{t|t-1} + P_{t|t-1}H^\top F_{t|t-1}^{-1}(y_t - y_{t|t-1})\,,\\
+  P_{t|t} & = P_{t|t-1} - P_{t|t-1}H^\top F_{t|t-1}^{-1} HP_{t|t-1}\,,
+\end{align*}
+where \textbf{Kalman gain} $K = P_{t|t-1}H^\top F_{t|t-1}^{-1}$, minimizing the mean square error (MSE) of the estimate. 
+
+We rewrite the updated state estimate and its covariance (related to Kalman gain) as follows.
+\begin{equation}\label{eqn: updated state est}
+  s_{t|t} = s_{t|t-1} + K(y_t - y_{t|t-1})\,,
+\end{equation}
+and 
+\begin{equation}\label{eqn: update state cov}
+  P_{t|t} = P_{t|t-1}(I - KH)\,,
+\end{equation}
+
+\paragraph{Numerical Stability: The Joseph Form}  To guarantee $P_{t|t}$ symmetric, we utilize the \text{Joseph form} of covariance update.  
+\begin{align*}
+  s_{t|t} & = s_{t|t-1} + K(y_t - y_{t|t-1})\,, \\
+   & = s_{t|t-1} + K(Hs_t - Hs_{t|t-1} + v_t)\,,\\
+   & = s_{t|t-1} + KH(s_t - s_{t|t-1}) + Kv_t\,,
+\end{align*}
+Define the estimate error as $e_t = s_t - s_{t|t}$. 
+\begin{align*}
+  s_t - s_{t|t} & = s_t - s_{t|t-1} - KH(s_t - s_{t|t-1}) - Kv_t\,, \\
+   & = (I - KH)(s_t - s_{t|t-1}) - Kv_t\,, 
+\end{align*}
+Updated covariance $P_{t|t} = \mathbb{E}[e_te_t^\top]$. 
+\begin{align}
+  P_{t|t} & = \mathbb{E}[((I - KH)(s_t - s_{t|t-1}) - Kv_t)((I - KH)(s_t - s_{t|t-1}) - Kv_t)^\top]\,,\notag \\
+   & = (I-KH)\mathbb{E}[(s_t - s_{t|t-1})(s_t - s_{t|t-1})^\top](I-KH)^\top + K\mathbb{E}[v_tv_t^\top]K^\top\,,\notag\\
+   & = (I-KH)P_{t|t-1}(I-KH)^\top + KR K^\top\,,\label{eqn: Joseph form}
+\end{align}
+\eqref{eqn: Joseph form} is robust to rounding errors and is preferred for practical implementation. 
+
+\section{Kalman Smoother}
+
+\begin{equation}\label{eqn: gaussian state conditional}
+  \begin{pmatrix}
+    s_t \\
+    s_{t+1}
+  \end{pmatrix}\mid Y_t\sim\mathcal{N}\left(\begin{bmatrix}
+                                              s_{t|t} \\
+                                              s_{t+1|t} 
+                                            \end{bmatrix}\,, \begin{bmatrix}
+                                                               P_{t|t} & P_{t|t}A^\top \\
+                                                               AP_{t|t}  & P_{t+1|t} 
+                                                             \end{bmatrix}\right)\,,
+\end{equation}
+where the covariance is
+\begin{align*}
+  \operatorname{cov}(s_t, s_{t+1}) & = \mathbb{E}[(s_t - s_{t|t})(s_{t+1} - s_{t+1|t})^\top]\,, \\
+   & = \mathbb{E}[(s_t - s_{t|t})(As_t - As_{t|t} + w_t)^\top]\,,\\
+   & = \mathbb{E}[(s_t - s_{t|t})(s_t - s_{t|t})^\top]A^\top\,,\\
+   & = P_{t|t}A^\top\,,
+\end{align*}
+
+Conditional distribution of $s_t$ given $s_{t+1}$ 
+\begin{align}
+  \mathbb{E}[s_t\mid s_{t+1}, Y_t] & = s_{t|t} + \underbrace{P_{t|t}A^\top P_{t+1|t}^{-1}}_{J_t}(s_{t+1} - s_{t+1|t})\,,\label{eqn: smoothed mean} \\
+  \operatorname{cov}[s_t\mid s_{t+1}, Y_t] & = P_{t|t} - P_{t|t}A^\top P_{t+1|t}^{-1} AP_{t|t}\,, \notag\\
+  & = P_{t|t} - \underbrace{P_{t|t}A^\top P_{t+1|t}^{-1}}_{J_t} P_{t+1|t}\underbrace{P_{t+1|t}^{-1}AP_{t|t}}_{J_t^\top}\,, \notag\\
+  & = P_{t|t} - J_tP_{t+1|t}J_t^\top\,,
+\end{align}
+
+State update (incorporating the future data) 
+\begin{align}
+  s_{t|T} & = \mathbb{E}[s_t\mid Y_T] = \mathbb{E}[\mathbb{E}(s_t\mid s_{t+1}, Y_t)\mid Y_T]\,,\notag \\
+   & = \mathbb{E}[s_{t|t} + J_t(s_{t+1} - s_{t+1|t})\mid Y_T]\,,\notag\\
+   & = s_{t|t} + J_t(s_{t+1|T} - s_{t+1|t})\,,
+\end{align}
+
+Covariance update\footnote{The update of covariance is based on \textbf{the law of total variance}, which can be derived as follows. For a random vector $Y \in \mathbb{R}^n$, the covariance matrix is defined as the expectation of the outer product of its centered values. 
+\begin{align*}
+    \operatorname{var}[Y] & = \mathbb{E}\left[ (Y - \mathbb{E}[Y])(Y - \mathbb{E}[Y])^\top \right] \notag \\
+    &= \mathbb{E}\left[ YY^\top - Y(\mathbb{E}[Y])^\top - \mathbb{E}[Y]Y^\top + \mathbb{E}[Y]\mathbb{E}[Y]^\top \right] \notag \\
+    &= \mathbb{E}[YY^\top] - \mathbb{E}[Y]\mathbb{E}[Y]^\top
+\end{align*}
+This definition extends naturally to the conditional case. For a random vector $Y$ given an observation $X$, the conditional covariance is expressed as:
+\begin{equation}
+    \operatorname{var}[Y \mid X] = \mathbb{E}[YY^\top \mid X] - \mathbb{E}[Y \mid X]\mathbb{E}[Y \mid X]^\top\,,\notag
+\end{equation}
+The Law of Total Variance decomposes the total uncertainty of a latent state into the mean of the conditional variance and the variance of the conditional mean:
+\begin{equation}
+    \operatorname{var}[Y] = \mathbb{E}[\operatorname{var}(Y \mid X)] + \operatorname{var}(\mathbb{E}[Y \mid X])\,,\notag
+\end{equation}
+}
+\begin{align}
+  P_{t|T} & = \mathbb{E}[\operatorname{var}(s_t\mid s_{t+1}, Y_t)] + \operatorname{var}[\mathbb{E}(s_t\mid s_{t+1}, Y_t)]\,,\notag \\
+   & =\mathbb{E}[P_{t|t} - J_tP_{t+1|t}J_t^\top\mid Y_T] + \operatorname{var}[s_{t|t} + J_t(s_{t+1} - s_{t+1|t})\mid Y_T]\,,\notag\\
+   & = P_{t|t} - J_tP_{t+1|t}J_t^\top + J_tP_{t+1|T}J_t^\top\,,\notag\\
+   & = P_{t|t} +  J_t\left(P_{t+1|T} - P_{t+1|t}\right)J_t^\top\,,
+\end{align}
+
+\section{Durbin and Koopman Smoother}
+
+In academic literature (e.g., Koopman 1993, Durbin \& Koopman 2012), $r_t$ is formally defined as the \textbf{score vector} of the future observations. Specifically, it is the derivative of the log-likelihood of the future observations conditional on the state $s_{t+1}$:
+\begin{equation*}
+  r_t := \frac{\partial\log p(y_{t+1}, \dots, y_T\mid s_{t+1})}{\partial s_{t+1}}\,,
+\end{equation*}
+
+From a geometric perspective, smoothing can be viewed as an orthogonal projection in a \textbf{Hilbert space} of random variables. While the Kalman filter $s_{t|t}$ provides the projection of $s_t$ onto the subspace spanned by $\{y_1, \dots, y_t\}$, the adjoint variable $r_t$ represents the \textbf{additional information} provided by the future subspaces $\{y_{t+1},\dots, y_T\}$ that is orthogonal to the past. 
+
+In the context of the \text{Optimal Control}, $r_t$ is the \text{costate}. It measures the sensitivity of the total objective function (the log-likelihood) to a small perturbation in the state $s_{t+1}$. It essentially tells us :"If I nudge the state $s_{t+1}$ by a tiny amount, how much does the total likelihood of seeing the future data change?"
+
+Let $\ell = \log p(y_{1:T})$ be the joint log-likelihood of all observations. In a Gaussian system, the posterior mean $\hat{s}_{t|T}$  is the value that maximizes the conditional density. The log-likelihood can be split into two independent parts relative to the state $s_t$:
+\begin{enumerate}
+  \item \textbf{the past}: $\log p(s_t\mid y_{1:t-1})$, which is the prior (predicted) density from the Kalman filter. 
+  \item \textbf{the future}: $\log p(y_t, \dots, y_T\mid s_t)$, which contains the current and future information. 
+\end{enumerate}
+Therefore:
+\begin{equation*}
+  \ell(s_t) = \log p(s_t\mid y_{1:t-1}) + \log p(y_{t:T}\mid s_t)\,,
+\end{equation*}
+Now, taking derivative with respect to $s_t$, start with the first term. 
+\begin{equation*}
+  \frac{\partial}{\partial s_t}\left[-\frac{1}{2}(s_t - s_{t|t-1})^\top P_{t|t-1}^{-1}(s_t - s_{t|t-1})\right] = - P_{t|t-1}^{-1}(s_t - s_{t|t-1})\,,
+\end{equation*}
+Now, the second term (the definition of $r_{t-1}$) 
+\begin{equation*}
+  r_{t-1} = \frac{\partial }{\partial s_t}\log p(y_{t:T}\mid s_t)\,,
+\end{equation*}
+Combine with the first term and obtain the first-order condition:
+\begin{equation*}
+  s_t - s_{t|t-1} = P_{t|t-1}r_{t-1}\,,
+\end{equation*}
+
+
+If we expand $r_{t-1}$ using the chain rule:
+\begin{align*}
+  r_{t-1} & = \frac{\partial\log p(y_t\mid s_t)}{\partial s_t} + \frac{\partial \log p(y_{t+1:T}\mid s_t)}{\partial s_t}\,, \\
+    & = H^\top R^{-1}(y_t - Hs_t) + \left(\frac{\partial s_{t+1}}{\partial s_t}\right)^\top \frac{\partial}{\partial s_t}\log p(y_{t+1:T}\mid s_t)\,,\\
+    & =  H^\top R^{-1}(y_t - Hs_t) + A^\top r_t\,,
+\end{align*}
+
+
+
+
+
+
+For a linear Gaussian model, the smoothed estimates of the disturbances ($w_t$ and $v_t$) are those that minimize the following quadratic cost function (which is the negative log-likelihood of the joint distribution). The \textbf{cost function} $\mathcal{J}$ is defined as 
+\begin{equation}\label{eqn: cost func J}
+  \mathcal{J} = \frac{1}{2}\sum_{t=1}^T\left(v_t^\top R^{-1}v_t + w_t^\top Q^{-1}w_t\right)\,,
+\end{equation}
+It is subject to the constraints of the system equations 
+\begin{eqnarray*}
+% \nonumber % Remove numbering (before each equation)
+  v_t &=& y_t - Hs_t\,, \\
+  w_t &=& s_{t+1} - As_{t}\,,
+\end{eqnarray*}
+
+To solve this constrained optimization, we introduce a vector of \textbf{Lagrangian Multipliers (Adjoint Variables)}, which we call $r_t$. We define the Lagrangian as:
+\begin{equation*}
+  \mathcal{L} = \frac{1}{2}\sum_{t=1}^{T}\left((y_t - Hs_t)^\top  R^{-1}(y_t - Hs_t) + w_t^\top Q^{-1}w_t\right) + \sum_{t=1}^{T}r_t^\top\left(s_{t+1}-As_{t} - w_t \right)\,,
+\end{equation*}
+
+The first-order conditions are
+\begin{align*}
+  \frac{\partial\mathcal{L}}{\partial s_t} & =  - H^\top R^{-1}v_t - A^\top r_t  +  r_{t-1} = 0\,,\\
+  \frac{\partial\mathcal{L}}{\partial w_t} & = Q^{-1}w_t -  r_t = 0\,,
+\end{align*}
+Rearrange and obtain
+\begin{align}
+  r_{t-1} & = H^\top R^{-1}v_t + A^\top r_t\,, \label{eqn: rt foc}\\
+  r_t & =  Q^{-1}w_t\,,
+\end{align}
+
+We have the state variable $s_t$ distributed as Gaussian, and its log-density function is 
+\begin{equation*}
+  \log p(s_t\mid y_{1:t-1}) = -\frac{1}{2}(s_t - s_{t|t-1})^\top P_{t|t-1}^{-1}(s_t - s_{t|t-1}) + \text{const}\,,
+\end{equation*}
+We take the derivative (gradient) of this log-density with respect to $s_t$, and obtain:
+\begin{equation*}
+  \nabla_{s_t}\log p(s_t\mid y_{1:t-1}) = - P_{t|t-1}^{-1}(s_t - s_{t|t-1})\,,
+\end{equation*}
+In Durbin and Koopman derivation, $r_{t-1}$ is defined as the derivative of the \textbf{entire} log-likelihood of all observations $(y_1,\dots, y_T)$ with respect to the predicted state $s_{t|t-1}$. Formally, 
+\begin{equation*}
+  r_{t-1} = \nabla_{s_{t|t-1}}\log p(y_1, \dots, y_T)\,,
+\end{equation*}
+Take expectation conditional on the all future observation, and obtain
+\begin{equation*}
+  s_{t|T} - s_{t|t-1} = P_{t|t-1}r_{t-1}\,,
+\end{equation*}
+
+We define the innovation at time $t$ as $e_t = y_t - Hs_{t|t-1}$, and by substituting the observation equation $y_t = Hs_t + v_t$, we can rewrite the innovation in terms of the estimation error $(s_t - s_{t|t-1})$:
+\begin{equation*}
+  e_t = H\left(s_t - s_{t|t-1}\right) + v_t\,,
+\end{equation*}
+Rearrange for the measurement noise $v_t$:
+\begin{equation*}
+  v_t = e_t - H\left(s_t - s_{t|t-1}\right)\,,
+\end{equation*}
+%Substitute this into the first-order condition of the cost function $\mathcal{J}$ 
+%\begin{align*}
+%  r_{t-1} & = H^\top R^{-1}v_t + A^\top r_t\,, \\
+%   & = H^\top R^{-1}\left[ e_t - H\left(s_t - s_{t|t-1}\right)\right] + A^\top r_t\,,\\
+%   & = H^\top R^{-1}e_t - H^\top R^{-1}H\underbrace{\left(s_t - s_{t|t-1}\right)}_{=P_{t|t-1}r_{t-1}} + A^\top r_t\,,\\
+%   & = H^\top R^{-1}e_t - H^\top R^{-1}HP_{t|t-1}r_{t-1} + A^\top r_t\,,
+%\end{align*}
+%Solve for $r_{t-1}$
+%\begin{align*}
+%  \left(I + H^\top R^{-1}HP_{t|t-1}\right) r_{t-1} & = H^\top R^{-1}e_t + A^\top r_t\,,
+%\end{align*}
+%Applying the \textbf{Matrix Inversion Lemma} or (\textbf{Woodbury Identity}), it can be shown that:
+%\begin{equation*}
+%  \left(I + H^\top R^{-1}HP_{t|t-1}\right)^{-1}H^\top R^{-1} = H^\top\left(HP_{t|t-1}H^\top + R\right)^{-1}\,,
+%\end{equation*}
+%
+%We have $v_t = e_t - H(s_t - s_{t|t-1}) = e_t - HP_{t|t-1}r_{t-1}$. 
+Multiply by $R^{-1}$:
+\begin{equation*}
+  R^{-1}v_t = R^{-1}e_t - R^{-1}HP_{t|t-1}r_{t-1}\,,
+\end{equation*}
+and $r_{t-1} = H^\top R^{-1}v_t + A^\top r_t$, then we have
+\begin{align*}
+  R^{-1}v_t  & =  R^{-1}e_t - R^{-1}HP_{t|t-1}\left(H^\top R^{-1}v_t + A^\top r_t\right)\,, \\
+  \left(I + R^{-1}HP_{t|t-1}H^\top\right)R^{-1}v_t & = R^{-1}e_t -  R^{-1}HP_{t|t-1}A^\top r_t\,,
+\end{align*}
+In the first term
+\begin{align*}
+  \left(I + R^{-1}HP_{t|t-1}H^\top\right)& = R^{-1}\underbrace{\left(R+HP_{t|t-1}H^\top\right)}_{=F_{t|t-1}}\,, \\
+   \left(I + R^{-1}HP_{t|t-1}H^\top\right)R^{-1}& = \left(R^{-1}F_{t|t-1}\right)^{-1}R^{-1}\,,\\
+   & = F_{t|t-1}^{-1}RR^{-1} = F_{t|t-1}^{-1}\,,
+\end{align*}
+In the second term
+\begin{align*}
+  \left(I + R^{-1}HP_{t|t-1}H^\top\right)R^{-1} & = F_{t|t-1}^{-1}\,, \\
+  \left(I + R^{-1}HP_{t|t-1}H^\top\right)R^{-1}HP_{t|t-1}  & = F_{t|t-1}^{-1}HP_{t|t-1} = \left(P_{t|t-1}H^\top F_{t|t-1}^{-1}\right)^\top = K^\top\,,
+\end{align*}
+Combined, we have
+\begin{equation}\label{eqn: recurive innovation}
+  R^{-1}v_t = F_{t|t-1}^{-1}e_t - K^\top A^\top r_t\,,
+\end{equation}
+Substitute into \eqref{eqn: rt foc} and obtain
+\begin{align*}
+  r_{t-1} & = H^\top\left(F_{t|t-1}^{-1}e_t - K^\top A^\top r_t\right) + A^\top r_t\,, \\
+   & = H^\top F_{t|t-1}^{-1}e_t + \left(A^\top -H^\top K^\top A^\top \right)r_t\,,\\
+   & = H^\top F_{t|t-1}^{-1}e_t + \left(\underbrace{A -AKH}_{=L}\right)^\top r_t\,,\\
+   & = H^\top F_{t|t-1}e_t + L^\top r_t
+\end{align*}
+
+The \textbf{Durbin-Koopman Simulation Smoother Algorithm} is sketched as:
+\begin{enumerate}
+  \item \textbf{Simulate synthetic data}: generate random noise $w_t^+\sim\mathcal{N}(0, Q)$ and $v^+_t\sim\mathcal{N}(0,R)$. Use these to create a "fake" state sequence $s_t^+$ and observations $y^+_t$.
+  \item \textbf{Compute residuals}: define a "diff" observation: $y^*_t = y_t - y^+_t$.
+  \item \textbf{Run Kalman filter}: run the filter on $y^*_t$ to obtain the innovations, $e^*_t, F_{t|t-1}$ and $K$.
+  \item \textbf{Run $r_t$ recursion}: use the recursive form on $e^*_t$ to get the sequence $r_0, \dots, r_T$. 
+  \item \textbf{Construct the sample}:
+  \begin{itemize}
+    \item The simulated sample of the state is $\tilde{s}_t = s^+_t + P_{t|t-1}r_{t-1}$.
+    \item $\tilde{w}_t = w^+_t + QA^\top r_t$.
+  \end{itemize}
+\end{enumerate} 
+
+
+
+
+
+
+
+\end{document} 
