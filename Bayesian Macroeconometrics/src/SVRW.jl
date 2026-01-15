@@ -1,6 +1,6 @@
 using SparseArrays, Distributions, LinearAlgebra, Random
 
-function SVRW(ystar::Matrix{Float64}, h::Matrix{Float64}, h0::Real, sigh2::Real)
+function SVRW(ystar::Vector{Float64}, h::Vector{Float64}, h0::Float64, sigh2::Float64)
 
     T = length(h)
 	pj = [0.00730 0.10556 0.00002 0.04395 0.34001 0.24566 0.25750]; 
@@ -18,9 +18,9 @@ function SVRW(ystar::Matrix{Float64}, h::Matrix{Float64}, h0::Real, sigh2::Real)
     #iSig = spdiagm(0 => vec(1 ./s2j[S]))
     iSig = Diagonal(vec(1 ./s2j[S]))
     Dh = iSig + HH/sigh2
-    h_hat = Dh\(iSig*(ystar .-mj[S]) + h0/sigh2*HH*ones(T,1))
+    h_hat = Dh\(iSig*(ystar .-mj[S]) + h0/sigh2*HH*ones(T))
     #h = h_hat + cholesky(Dh).L'\randn(T)
-    h = h_hat + cholesky(Dh).L'\randn(T,1) 
+    h = h_hat + cholesky(Dh).L'\randn(T) 
 
-    return h 
+    return vec(h) 
 end
