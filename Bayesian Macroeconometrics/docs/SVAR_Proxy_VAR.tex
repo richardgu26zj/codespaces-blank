@@ -1,0 +1,167 @@
+\documentclass[a4paper,10pt,UTF8]{article}
+% --- Font: Palatino for Text & Math ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo} % The classic Palatino/Pazo package
+\usepackage{amsmath, amsthm, mathtools, bm,amssymb}
+\linespread{1.3}
+\usepackage[a4paper, left=3cm, right=2cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage[
+  style=authoryear-comp,
+  backend=biber,
+  maxcitenames=2,
+  giveninits = true,
+  uniquename = false,
+  doi = false,
+  url = false
+]{biblatex}
+\renewcommand*{\nameyeardelim}{\space}
+
+% Remove "In:" for articles
+\renewbibmacro{in:}{%
+  \ifentrytype{article}{}{\printtext{\bibstring{in}\intitlepunct}}}
+
+\addbibresource{prox_SVAR_refs.bib}
+
+\usepackage{xcolor}
+\definecolor{darkblue}{RGB}{0,0,120}
+\definecolor{darkred}{RGB}{120,0,0}
+\definecolor{deepblue}{RGB}{0,40,90}
+\definecolor{deepred}{RGB}{120,0,0}
+\definecolor{econblue}{RGB}{0,0,128}
+\definecolor{tealblue}{RGB}{0,90,90}
+\definecolor{softblue}{RGB}{120,160,220}
+\definecolor{softcyan}{RGB}{120,200,200}
+\definecolor{slateblue}{RGB}{70,90,130}
+\definecolor{navy}{RGB}{30,50,100}
+
+%\usepackage{hyperref}
+% --- Hyperlinks ---
+\usepackage[
+  colorlinks=true,
+  linkcolor= navy,
+  citecolor= deepblue,
+  urlcolor= econblue
+]{hyperref}
+
+% --- CRITICAL FIX: The Font Error Fix ---
+% This tells LaTeX to use the standard AMS Blackboard Bold instead of 
+% the Pazo version that is missing on your MiKTeX setup.
+%\DeclareMathAlphabet{\mathbb}{U}{msb}{m}{n}
+
+
+
+\begin{document}
+\title{\textbf{Structural VAR: Proxy-VAR}}
+\author{Gu, Xin\thanks{PhD in Economics, School of Finance (School of Zheshang Asset Management), Zhejiang Gongshang
+University, Hangzhou, Zhejiang, China. Email: \href{mailto:richardgu26@zgjsu.edu.cn}{richardgu26@zgjsu.edu.cn}.}}
+\date{}
+
+\maketitle
+
+% --- Added Table of Contents ---
+\tableofcontents
+
+\section{Introduction}
+
+A central challenge in empirical macroeconomics is the \textbf{identification of structural shocks} from reduced-form innovations.  In standard Vector Autoregression (VAR), the observed residuals ($u_t$) are typically correlated across equations, reflecting a mixture of various structural disturbances ($\epsilon_t$).  To recover the causal impact of a specific policy - such as a monetary policy - one must isolate the "pure" structural shock from the endogenous movements in the data. 
+
+To address this, the \textbf{proxy-SVAR framework}, popularize by \textcite{stock2012disentangling} and \textcite{mertens2013dynamic}, utilizes \textbf{external instruments} ($Z_t$) to achieve identification. Unlike traditional identification schemes that rely on short-run zero restrictions (Cholesky) or sign restrictions, the proxy-SVAR approach leverages information outside the VAR system. An external variable is considered a valid proxy if it satisfies two fundamental conditions:
+\begin{itemize}
+  \item \textbf{Relevance}: The instrument must be correlated with the structural shock of interest, i.e., $\mathbb{E}[Z_t\epsilon_{i,t}'] \neq 0$.
+  \item \textbf{Exogeneity}: The instrument must be uncorrelated with all other structural shocks in the system, i.e., $\mathbb{E}[Z_t\epsilon_{-i,t}'] = 0$.
+\end{itemize}
+
+\section{Proxy-SVAR Estimation}
+
+The Proxy-SVAR relies on the relationship $u_t = B\epsilon_t$. We focus on identifying the first column of $B(b_1)$, which represents the impact of structural shock ($\epsilon_{1,t}$) of interest, as \textcite{gertler2015monetary}.
+
+We partition the $n$ variable in the VAR into the \textbf{policy variable} ($p_t$, the first variable) and all \textbf{other variables} ($q_t$, the remaining $n-1$ variables). We partition the residuals and the $B$ matrix accordingly:
+\begin{equation*}
+  \begin{bmatrix}
+    u_{pt} \\
+    u_{qt} 
+  \end{bmatrix} =\begin{bmatrix}
+                   b_{11} & b_{12} \\
+                   b_{21} & b_{22} 
+                 \end{bmatrix} \begin{bmatrix}
+                    \epsilon_{pt} \\
+                    \epsilon_{qt}
+                  \end{bmatrix}\,,
+\end{equation*}
+
+
+\subsection{2SLS Stage}
+We start the \textbf{Two-Stage-Least-Square (2SLS)}.  First, we regress $u_{pt}$ on the instrument $Z_t$:
+\begin{equation}\label{eqn: stage1regss}
+  u_{pt} = \beta_{11} + \beta_{12}Z_t + e_{pt}\,,
+\end{equation}
+To include intercept, we ensure that $\beta_{12}$ captures only the \textbf{variation} in the policy residual that moves with the instrument, regardless of any temporary level shifts in the sub-sample. The predicted value $\hat{u}_{pt}$ represents the part of policy residual driven purely by the instrument (and thus by the structural shock $\epsilon_{pt}$). 
+
+Next, we \textbf{identify the relative ratio}. We regress the other residuals $u_{qt}$ on the predicted $\hat{u}_{pt}$: 
+\begin{equation}\label{eqn: stage2regss}
+  u_{qt} = \beta_{21} + \beta_{22}\hat{u}_{pt} + e_{qt}\,,
+\end{equation}
+The coefficient $\beta_{22}$ is a vector of \textbf{relative ratios}:
+\begin{equation}\label{eqn: relative ratio}
+  \beta_{22} = \frac{b_{21}}{b_{11}}\,,
+\end{equation}
+It uncovers the "direction" of the shock. 
+
+The reduced-form covariance matrix $\Sigma = \mathbb{E}[u_tu_t']$ is partitioned to match our variables:
+\begin{equation*}
+  \Sigma = \begin{bmatrix}
+             S_{11} & S_{12} \\
+             S_{21} & S_{22} 
+           \end{bmatrix}
+\end{equation*}
+where $S_{11} = \mathbb{E}[u^2_{pt}]$, the variance of the policy residual, $S_{21} = \mathbb{E}[u_{qt}u_{pt}']$, the covariance between policy and others, and $S_{22} = \mathbb{E}[u_{qt}u_{qt}']$, the covariance matrix of other variables.  
+
+Now, we map covariance matrix $\Sigma$ to the structural $B$ matrix. Since $\Sigma = BB'$, we expand the partitioned multiplication:
+\begin{equation}\label{eqn:covmapping}
+  \begin{bmatrix}
+    S_{11} & S_{12} \\
+    S_{21} & S_{22} 
+  \end{bmatrix} = \begin{bmatrix}
+                    b_{11} & b_{12} \\
+                    b_{21} & b_{22}
+                  \end{bmatrix}\begin{bmatrix}
+                    b_{11}' & b_{12}' \\
+                    b_{21}' & b_{22}'
+                  \end{bmatrix}
+\end{equation}
+This gives us three identity equations:
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  S_{11} &=& b_{11}^2 + b_{12}b_{12}'\,,\label{eqn: idS11} \\
+  S_{21} &= & b_{21}b_{11}' + b_{22}b_{12}'\,, \label{eqn:id S21}\\
+  S_{22} & = & b_{21}b_{21}' + b_{22}b_{22}'\,,\label{eqn:idS22}
+\end{eqnarray}
+From 2SLS, we have the identified vector $\beta_{22} = b_{21}b_{11}^{-1}$, which mean we can write $b_{21} = \beta b_{11}$. Plug it into equations \eqref{eqn: idS11} and \eqref{eqn:id S21}, and obtain
+\begin{eqnarray*}
+% \nonumber % Remove numbering (before each equation)
+  b_{12}b_{12}' &=& S_{11} - b_{11}^2\,, \\
+  S_{21} &=& \beta_{22}b_{11}^2 + b_{22}b_{12}'\,,
+\end{eqnarray*}
+
+$Q$ is defined as the covariance matrix of the term $(u_{qt} - \beta_{22}u_{pt})$:
+\begin{equation*}
+  Q = \mathbb{E}[(u_{qt} - \beta_{22}u_{pt})(u_{qt} - \beta_{22}u_{pt})']\,,
+\end{equation*}
+We have $S_{11} = \mathbb{E}[u_{pt}u_{pt}']$, $S_{21} =\mathbb{E}[u_{qt}u_{pt}']$, and $S_{22} = \mathbb{E}[u_{qt}u_{qt}']$.  Then, 
+\begin{align*}
+  Q  & = \mathbb{E}[u_{qt}u_{qt}' -u_{qt}u_{pt}'\beta_{22}' -\beta_{22}u_{pt}u_{qt}' + \beta_{22}u_{pt}u_{pt}'\beta_{22}']\,, \\
+    &  = S_{22} - \left(S_{21}\beta_{22}'+\beta_{22}S_{21}'\right) +\beta_{22}S_{11}\beta_{22}'\,,
+\end{align*}
+
+\begin{equation}\label{eqn:b11square}
+  b_{11}^2 = S_{11} - (S_{21} - \beta_{22}S_{11})'Q^{-1}(S_{21} - \beta_{22}S_{11})\,,
+\end{equation}
+
+
+
+\printbibliography
+
+
+
+\end{document} 
