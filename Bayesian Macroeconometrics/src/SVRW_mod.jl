@@ -10,7 +10,7 @@ function SVRW_mod(ystar::AbstractVector{Float64}, h::AbstractVector{Float64},
 
     P = pj .*pdf.(Normal.(h .+ mj, sj), ystar)
     Prob = P./sum(P, dims = 2)
-    vec(S) = 7 .- sum(rand(T) .< cumsum(Prob, dims=2)) .+1
+    S = 7 .- sum(rand(T) .< cumsum(Prob, dims=2),dims=2) .+1
     
     iSig = Diagonal(vec(1 ./s2j[S]))
     Dh = iSig + HH/sigh2

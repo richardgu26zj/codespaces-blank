@@ -1,10 +1,6 @@
 using SparseArrays, Distributions, LinearAlgebra, Random
 
-<<<<<<< HEAD
 function SVRW(ystar::Vector{Float64}, h::Vector{Float64}, h0::Real, sigh2::Real)
-=======
-function SVRW(ystar::Vector{Float64}, h::Vector{Float64}, h0::Float64, sigh2::Float64)
->>>>>>> 1e4313c2593df632d7842eb5d56f566fd0d44f53
 
     T = length(h)
 	pj = [0.00730 0.10556 0.00002 0.04395 0.34001 0.24566 0.25750]; 
