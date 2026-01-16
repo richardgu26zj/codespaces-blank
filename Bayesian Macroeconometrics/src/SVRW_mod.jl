@@ -1,6 +1,6 @@
 using SparseArrays, Distributions, LinearAlgebra, Random
 
-function SVRW_mod(ystar::AbstractVector{Float64}, h::AbstractVector{Float64},
+function SVRW_mod(ystar::Vector{Float64}, h::Vector{Float64},
                   h0::Real,sigh2::Real,HH::AbstractArray{Float64})
     T = length(h)
     pj = [0.00730 0.10556 0.00002 0.04395 0.34001 0.24566 0.25750]; 
@@ -12,10 +12,17 @@ function SVRW_mod(ystar::AbstractVector{Float64}, h::AbstractVector{Float64},
     Prob = P./sum(P, dims = 2)
     S = 7 .- sum(rand(T) .< cumsum(Prob, dims=2),dims=2) .+1
     
-    iSig = Diagonal(vec(1 ./s2j[S]))
+    #iSig = Diagonal(vec(1 ./s2j[S]))
+    inv_s2j_S = 1.0./vec(s2j[S])
+    iSig = Diagonal(inv_s2j_S)
     Dh = iSig + HH/sigh2
-    h_hat = Dh\(iSig*(ystar .-mj[S])+h0/sigh2*HH*ones)
-    h = h_hat + cholesky(Symmetric(Dh)).L'\randn(T)
+
+    rhs = inv_s2j_S.*(ystar .-vec(mj[S]))
+    rhs[1] += h0/sigh2
+    SDh = Symmetric(Dh)
+    #h_hat = Dh\(iSig*(ystar .-mj[S])+h0/sigh2*HH*ones)
+    h_hat = SDh\rhs
+    h = h_hat + cholesky(SDh).L'\randn(T)
 
     return vec(h)
     
