@@ -1,8 +1,8 @@
 using CSV, DataFrames,LinearAlgebra, Random, Distributions, Parameters, Plots
-using Revise, ProgressMeter,InteractiveUtils,StaticArrays
+using Revise, ProgressMeter
 
 includet("GibbsSVprior.jl")
-includet("SVRW_mod.jl")
+includet("SVRW.jl")
 includet("Gibbs_SV_run.jl")
 
 # load Data
@@ -11,8 +11,6 @@ data = Vector(rawdata[1:end-1,2])
 y = 400 .*log.(data[2:end]./data[1:end-1])
 
 @time store_h, store_para = Gibbs_SV_run(y,GibbsSVprior())
-#p = GibbsSVprior()
-#@code_warntype Gibbs_SV_run(y,p)
 
 using Statistics
 
