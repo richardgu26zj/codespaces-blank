@@ -11,8 +11,11 @@ function Gibbs_SV_run(y::Vector{Float64},prior::GibbsSVprior;
     # calculate a few things before the loop 
     ah0_bh0 = ah0/bh0
     atau_btau = atau/btau
-    H = sparse(I,T,T) - sparse(2:T,1:T-1,ones(1,T-1),T,T)
+    H = sparse(I,T,T) - sparse(2:T,1:T-1,vec(ones(1,T-1)),T,T)
     HH = H'*H
+
+    ystar = Vector{Float64}(undef,T)
+    inv_sig_vec = Vector{Float64}(undef,T)
 
     store_h = Matrix{Float64}(undef, T, Nsim)
     store_para = Matrix{Float64}(undef, 3, Nsim)
