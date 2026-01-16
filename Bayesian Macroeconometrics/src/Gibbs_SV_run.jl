@@ -1,7 +1,7 @@
 <<<<<<< HEAD
 using Random,Parameters,LinearAlgebra,Distributions,Revise
 
-includet("SVRW.jl")
+#includet("SVRW_mod.jl")
 =======
 using Random,Parameters,LinearAlgebra,Distributions,ProgressMeter
 
@@ -32,9 +32,11 @@ function Gibbs_SV_run(y::Vector{Float64},prior::GibbsSVprior;
 <<<<<<< HEAD
     @views for isim in 1:(Nsim + Nburn)
 
-        # sample h 
+        # sample h
+        H = sparse(I, T, T) - sparse(2:T, 1:T-1, vec(ones(T-1)),T, T)
+        HH = H'*H
         ystar = log.((y .- tau).^2 .+ 0.0001)
-        h = SVRW(ystar,h,h0,sigh2)
+        h = SVRW_mod(ystar,h,h0,sigh2,HH)
 
         # sample h0 
         Kh0 = 1/(1/sigh2 + 1/bh0)

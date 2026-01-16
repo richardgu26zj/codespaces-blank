@@ -2,7 +2,7 @@ using CSV, DataFrames,LinearAlgebra, Random, Distributions, Parameters, Plots
 using Revise, ProgressMeter
 
 includet("GibbsSVprior.jl")
-includet("SVRW.jl")
+includet("SVRW_mod.jl")
 includet("Gibbs_SV_run.jl")
 
 # load Data
