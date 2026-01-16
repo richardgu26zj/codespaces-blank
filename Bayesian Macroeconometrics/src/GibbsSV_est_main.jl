@@ -4,6 +4,7 @@ using Revise, ProgressMeter,InteractiveUtils,StaticArrays
 includet("GibbsSVprior.jl")
 includet("SVRW_mod.jl")
 includet("Gibbs_SV_run.jl")
+#includet("GibbsSVrun_main.jl")
 
 # load Data
 rawdata = CSV.read("data/PCE.csv",DataFrame)
@@ -11,6 +12,7 @@ data = Vector(rawdata[1:end-1,2])
 y = 400 .*log.(data[2:end]./data[1:end-1])
 
 @time store_h, store_para = Gibbs_SV_run(y,GibbsSVprior())
+#@time store_h, store_para = GibbsSVrun_main(y,GibbsSVprior())
 #p = GibbsSVprior()
 #@code_warntype Gibbs_SV_run(y,p)
 

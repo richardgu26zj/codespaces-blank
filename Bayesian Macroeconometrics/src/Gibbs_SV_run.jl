@@ -3,7 +3,7 @@ using SparseArrays,Random,Parameters,LinearAlgebra,Distributions
 #includet("SVRW_mod.jl")
 
 function Gibbs_SV_run(y::Vector{Float64},prior::GibbsSVprior;
-                   Nsim::Int64=50_000, Nburn::Int64=5_000)
+                   Nsim::Int64=500_000, Nburn::Int64=5_000)
     # unpack prior setup 
     @unpack ah0, bh0, atau, btau, nu0, S0 = prior
     T = length(y)

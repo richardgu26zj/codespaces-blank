@@ -24,6 +24,6 @@ function SVRW_mod(ystar::Vector{Float64}, h::Vector{Float64},
     h_hat = SDh\rhs
     h = h_hat + cholesky(SDh).L'\randn(T)
 
-    return vec(h)
+    return h
     
 end

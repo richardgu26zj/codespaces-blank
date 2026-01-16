@@ -85,7 +85,7 @@ plots = [histogram(store_param[:,i],
 
 plot(plots..., layout = (2,2), size = (950, 600))
 
-savefig("figures/LM_AR2_hist_plot.pdf");
+#savefig("figures/LM_AR2_hist_plot.pdf");
 
 
 

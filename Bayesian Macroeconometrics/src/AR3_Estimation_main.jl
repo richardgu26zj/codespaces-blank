@@ -5,8 +5,9 @@ rawdata = CSV.read("data/PCE.csv",DataFrame);
 data = Vector(rawdata[1:end-1,2]);
 data = 400 .*diff(log.(data));
 y = data[4:end]
-T,k = size(X);
+T = length(y)
 X = [ones(T,1) data[3:end-1] data[2:end-2] data[1:end-3]]
+T,k = size(X)
 
 # ---THE INPUT STRUCT---
 @with_kw struct AR3Bayesprior
