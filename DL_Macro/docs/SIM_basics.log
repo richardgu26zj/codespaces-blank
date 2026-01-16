@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.1.6)  7 JAN 2026 09:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.1.6)  9 JAN 2026 15:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**./kalman_filter_notes.tex
-(kalman_filter_notes.tex
+**./SIM_basics.tex
+(SIM_basics.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
 (C:\Program Files\MiKTeX\tex/latex/base\article.cls
@@ -333,8 +333,8 @@ File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 LaTeX Warning: Unused global option(s):
     [UTF8].
 
-(kalman_filter_notes.aux)
-\openout1 = `kalman_filter_notes.aux'.
+(SIM_basics.aux)
+\openout1 = `SIM_basics.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
 LaTeX Font Info:    ... okay on input line 18.
@@ -354,8 +354,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 18.
 LaTeX Font Info:    ... okay on input line 18.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 18.
 LaTeX Font Info:    ... okay on input line 18.
-
-(C:\Program Files\MiKTeX\tex/latex/graphics\graphicx.sty
+ (C:\Program Files\MiKTeX\tex/latex/graphics\graphicx.sty
 Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
 
 (C:\Program Files\MiKTeX\tex/latex/graphics\graphics.sty
@@ -440,15 +439,14 @@ Package color Info: Driver file: pdftex.def on input line 149.
 
 (C:\Program Files\MiKTeX\tex/latex/graphics\mathcolor.ltx))
 Package hyperref Info: Link coloring ON on input line 18.
-
-(kalman_filter_notes.out) (kalman_filter_notes.out)
+ (SIM_basics.out)
+(SIM_basics.out)
 \@outlinefile=\write3
-\openout3 = `kalman_filter_notes.out'.
+\openout3 = `SIM_basics.out'.
 
 LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 2
 5.
-
-(C:\Program Files\MiKTeX\tex/latex/psnfss\ot1ppl.fd
+ (C:\Program Files\MiKTeX\tex/latex/psnfss\ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
 LaTeX Font Info:    Trying to load font information for OML+zplm on input line 
@@ -505,7 +503,7 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 6.25204pt on input line 25.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 5.21004pt on input line 25.
- (kalman_filter_notes.toc
+ (SIM_basics.toc
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
 (Font)              scaled to size 10.42007pt on input line 3.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
@@ -516,49 +514,32 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.91925pt on input line 3.
 )
 \tf@toc=\write4
-\openout4 = `kalman_filter_notes.toc'.
+\openout4 = `SIM_basics.toc'.
 
 LaTeX Font Info:    Trying to load font information for U+fplmbb on input line 
-37.
+38.
 
 (C:\Program Files\MiKTeX\tex/latex/psnfss\ufplmbb.fd
 File: ufplmbb.fd 2003/10/30 Fontinst v1.914 font definitions for U/fplmbb.
-)
-Underfull \hbox (badness 10000) in paragraph at lines 36--38
-
- []
-
-[1
+) [1
 
 {C:/Users/richardgu26_home/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:
-/Program Files/MiKTeX/fonts/enc/dvips/base/8r.enc}] [2] [3] [4
-pdfTeX warning (ext4): destination with the same identifier (name{equation.16})
- has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.240 \end{equation}
-                    
-pdfTeX warning (ext4): destination with the same identifier (name{equation.16})
- has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.240 \end{equation}
-                    ] [5] [6] (kalman_filter_notes.aux)
+/Program Files/MiKTeX/fonts/enc/dvips/base/8r.enc}] [2] (SIM_basics.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
-Package rerunfilecheck Info: File `kalman_filter_notes.out' has not changed.
-(rerunfilecheck)             Checksum: 75DE65559608A5BF473853FAE955D5B0;1081.
+Package rerunfilecheck Info: File `SIM_basics.out' has not changed.
+(rerunfilecheck)             Checksum: 4EE7C22C67B5D1BF2355197C3FF7CDC2;790.
  ) 
 Here is how much of TeX's memory you used:
- 11635 strings out of 467870
- 175856 string characters out of 5428390
- 609149 words of memory out of 5000000
- 40270 multiletter control sequences out of 15000+600000
- 689570 words of font info for 192 fonts, out of 8000000 for 9000
+ 11584 strings out of 467870
+ 174831 string characters out of 5428390
+ 599023 words of memory out of 5000000
+ 40252 multiletter control sequences out of 15000+600000
+ 684812 words of font info for 179 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,16n,79p,717b,470s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,11n,79p,956b,454s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Progra
 m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKT
 eX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type
@@ -568,9 +549,9 @@ hpazo/fplmbb.pfb><C:/Program Files/MiKTeX/fonts/type1/public/mathpazo/fplmr.pfb
 les/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Program Files/MiKTeX/fonts/t
 ype1/urw/palatino/uplr8a.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/palatino/
 uplri8a.pfb>
-Output written on kalman_filter_notes.pdf (6 pages, 148407 bytes).
+Output written on SIM_basics.pdf (2 pages, 119942 bytes).
 PDF statistics:
- 158 PDF objects out of 1000 (max. 8388607)
- 42 named destinations out of 1000 (max. 500000)
- 49 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 115 PDF objects out of 1000 (max. 8388607)
+ 20 named destinations out of 1000 (max. 500000)
+ 41 words of extra memory for PDF output out of 10000 (max. 10000000)
 

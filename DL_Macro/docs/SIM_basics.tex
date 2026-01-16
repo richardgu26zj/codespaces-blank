@@ -1,0 +1,111 @@
+\documentclass[a4paper,10pt,UTF8]{article}
+% --- Font: Palatino for Text & Math ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo} % The classic Palatino/Pazo package
+\usepackage{amsmath, amsthm, mathtools, bm,amssymb}
+
+\usepackage[a4paper, left=3cm, right=2cm, top=2.5cm, bottom=2.5cm]{geometry}
+
+% --- CRITICAL FIX: The Font Error Fix ---
+% This tells LaTeX to use the standard AMS Blackboard Bold instead of 
+% the Pazo version that is missing on your MiKTeX setup.
+%\DeclareMathAlphabet{\mathbb}{U}{msb}{m}{n}
+
+% --- Hyperlinks ---
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}
+
+\begin{document}
+\title{\textbf{Standard Incomplete Market (SIM) Model}}
+\author{Gu, Xin\thanks{PhD in Economics, School of Finance (School of Zheshang Asset Management), Zhejiang Gongshang
+University, Hangzhou, Zhejiang, China. Email: \href{mailto:richardgu26@zgjsu.edu.cn}{richardgu26@zgjsu.edu.cn}.}}
+\date{}
+
+\maketitle
+
+% --- Added Table of Contents ---
+\tableofcontents
+
+%
+% https://github.com/shade-econ/nber-workshop-2025/blob/main/notebooks/sim_steady_state_fast.py
+%
+
+\section{Introduction}
+
+The \textbf{Bewley-Huggett-Aiyagari} framework is considered as the backbone of modern macroeconomics. The model draws from three seminal papers that moved macroeconomics beyond the \textbf{representative agent paradigm}. Huggett (1993) introduces the pure exchange economy, and shows that uninsurable idiosyncratic risk causes people to over-save for self-insurance, pushing the equilibrium risk-free risk rate $r$ below the rate of time preference $1/(\beta-1)$. This endowment economy model is extended by Aiyagari (1994) to include production with capital. It proves that in a steady state, the aggregate capital stock is higher than in a world with complete markets because of the \textbf{precautionary savings motive}. Bewley (1986) provides a foundational mathematics for models where agents use a single asset to smooth consumption against income shocks when insurance markets are \textbf{incomplete}.
+
+\section{Bewley-Huggett-Aiyagari Model}\label{sec: BHA model}
+
+\subsection{Individual Sequential Problem}\label{subsec: sequential form}
+The economy is populated with a continuum of infinitely lived households. Each household $i$ seeks to maximize her life-time expected utility:
+\begin{equation}\label{eqn: sim utility func}
+  \max_{a_{i,t}, c_{i,t}}\mathbb{E}_0\sum_{t=0}^{\infty}\beta^t u(c_{i,t})
+\end{equation}
+The utility function $u(\cdot)$ is typically assumed to be strictly increasing, strictly concave, and satisfies the Inada conditions. This maximization is subject to period-by-period budget constraint:
+\begin{equation}\label{eqn: sim budget constraint}
+  a_{i,t} + c_{i,t} \leq (1+r) a_{i,t-1} + y(e_{i,t})\,,
+\end{equation}
+where $r$ is the risk-free interest rate and $y(e_{i,t})$ is the stochastic labor income (reasonably assumed to be bounded away from zero). The exogenous state $e$ follows a first-order Markov chain.  This defines the evolution of individual wealth. Assets tomorrow $a_{i,t}$ are determined by current wealth, interest income $r$, and labor income, minus current consumption. 
+
+Unlike the Arrow-Debreu framework, markets in this model are \textbf{incomplete}: households are unable to trade assets that pay out contingent on the realization of $e$. They can only use a single non-contingent asset $a$ to self-insure. Furthermore, households face an \text{ad-hoc borrowing constraint}: 
+\begin{equation}\label{eqn: sim borrowing constraint}
+  a_{i,t} \geq \underbar{a}\,,
+\end{equation}
+where $\underbar{a}$ is often set to $0$ (no borrowing) or the "\textbf{natural borrowing limit}", which is the maximum debt an agent can surely repay in the worst-case income scenario. Economically, it creates a group of \textbf{constrained agents} who cannot smooth consumption, leading to high marginal propensities to consume (MPC). 
+
+Next, we convert the problem \eqref{eqn: sim utility func}, and two constraints \eqref{eqn: sim budget constraint} and \eqref{eqn: sim borrowing constraint} into a \textbf{Bellman equation}
+\begin{align}\label{eqn: sim Bellman}
+  V(e, a) & = \max_{c, a'} u(c) + \beta\mathbb{E}V\left[V(e',a')\mid e\right]\,,  \\
+  \text{s.t.~~} a'+c & = (1+r) a + y(e) \\
+  a'  &\geq \underbar{a}
+\end{align}
+In this setup, \eqref{eqn: sim Bellman} contains two state variables: exogenous state $e$, and endogenous asset $a$.  The solution yields two critical \textbf{policy functions}: the savings rule $a'(e,a)$ and the consumption rule $c(e,a)$. 
+
+Policy functions satisfy standard \textbf{first-order condition}:
+\begin{equation}\label{eqn: sim foc}
+  u'(c) \geq \beta\mathbb{E}\left[V_a(e', a')\mid e\right]\,,
+\end{equation}
+where equality holds unless borrowing constraint binds. We also could obtain derivative on right from \textbf{envelope condition}:
+\begin{equation}\label{eqn: sim evelope cond}
+  V_a(e,a) = (1+r)u'(c)\,,
+\end{equation}
+
+Based on \eqref{eqn: sim foc}, if $\beta(1+r) \geq 1$, then $u'(c_{i,t})$ is \textbf{supermartingale}, since then
+\begin{equation*}
+  \mathbb{E}_t[u'(c_{i,t+1})] \leq u'(c_{i,t})\,,
+\end{equation*}
+that is, in expectation, it is decreasing. \text{Supermartingale convergence theorem}: if bounded, then $u'(c_{i,t})$ will converge almost surely to some random variable $u^{'*}$.
+
+If $\beta(1+r)\geq 1$, then households tend toward infinite assets and consumption. Intuitively, if $\beta(1+r) = 1$, no uncertainty would make consumption $c$ over time constant. Uncertainty and borrowing constraint create upward drift, and then need $\beta(1+r) <1$ to cancel this out. Otherwise, consumption and assets would drift up unboundedly. We want steady states with finite assets, so assume $\beta(1+r) <1$\footnote{For more formal proof refers to Chamberlain and Wilson (2002).}. 
+
+%==================================================================================
+\subsection{Aggregate Problem}
+
+Generally, we would contemplate economies with a \textbf{continuum} of such households, and consider aggregate outcomes. At this stage, let us focus on \text{total asset demand} implied by this model. It is a \textbf{heterogeneous agent economy}, with a \textbf{distribution} of households across the two states, exogenous $e$ and endogenous assets $a$. 
+
+To describe the distribution of households, we adopt a \textbf{measure}  $\mu$. If finitely many $e$, we could define $\mu(e,\mathbb{A})$ separately for each $e$, as a measure on subset $\mathbb{A}$ of the asset space. 
+
+The law of motion (also known as the \textbf{Kolmogorov forward equation})is given by
+\begin{equation}\label{eqn: sim kfeq}
+  \mu_{t+1}(e', \mathbb{A}) = \sum_e\mu_t\left(e, (a')^{-1}(e, \mathbb{A})\right)\cdot\mathbb{P}(e, e')\,,
+\end{equation}
+where $\mathbb{P}(e,e')$ is \textbf{transition probability} and $(a')^{-1}(e, \cdot)$ is the inverse of policy $a'(e,\cdot)$. 
+
+%=======================================================================================
+\subsection{The Steady State}
+The steady state of the model consists of \textbf{policy functions} that solve Bellman, and \textbf{measure} that satisfies steady-state law of motion. In such model economy, aggregate assets and consumption
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  A &=& \int ad\mu = \int a'(e,a)d\mu\,,\label{eqn: agg assets} \\
+  C &=& \int c d\mu\,,\label{eqn: agg consumption}
+\end{eqnarray}
+
+
+
+
+
+
+
+
+
+\end{document} 
